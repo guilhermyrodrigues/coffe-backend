@@ -2,14 +2,16 @@ package com.coffeworld.backend.model;
 
 import com.coffeworld.backend.enums.StatusPedido;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Data
 @Entity
 public class Pedido {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     private String cpfCliente;
