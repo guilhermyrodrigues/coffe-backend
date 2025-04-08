@@ -2,6 +2,7 @@ package com.coffeworld.backend.service;
 
 import com.coffeworld.backend.dto.ItemPedidoDTO;
 import com.coffeworld.backend.dto.PedidoDTO;
+import com.coffeworld.backend.enums.StatusPedido;
 import com.coffeworld.backend.mapper.ItemPedidoMapper;
 import com.coffeworld.backend.mapper.PedidoMapper;
 import com.coffeworld.backend.model.ItemPedido;
@@ -11,6 +12,7 @@ import com.coffeworld.backend.repository.PedidoRepository;
 import com.coffeworld.backend.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,18 +34,21 @@ public class PedidoService {
     @Autowired
     private ItemPedidoMapper itemPedidoMapper;
 
+    @Transactional(readOnly = true)
     public List<PedidoDTO> listarTodos() {
         return pedidoRepository.findAll().stream()
                 .map(pedidoMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public PedidoDTO buscarPorId(Long id) {
         return pedidoRepository.findById(id)
                 .map(pedidoMapper::toDTO)
                 .orElse(null);
     }
 
+    @Transactional(rollbackFor = Throwable.class)
     public PedidoDTO salvar(PedidoDTO pedidoDTO) {
         Pedido pedido = pedidoMapper.toEntity(pedidoDTO);
         pedido.setDataHoraPedido(LocalDateTime.now());
@@ -51,14 +56,23 @@ public class PedidoService {
         double valorTotal = 0.0;
         int tempoEstimadoTotal = 0;
 
-        for (ItemPedido item : pedido.getItens()) {
-            Produto produto = produtoRepository.findById(item.getProduto().getId()).orElseThrow();
+        List<ItemPedido> itens = pedidoDTO.getItens().stream().map(itemDTO -> {
+            Produto produto = produtoRepository.findById(itemDTO.getProdutoId())
+                    .orElseThrow(() -> new RuntimeException("Produto não encontrado com ID: " + itemDTO.getProdutoId()));
+
+            ItemPedido item = new ItemPedido();
             item.setProduto(produto);
             item.setPedido(pedido);
-            valorTotal += produto.getPreco() * item.getQuantidade();
-            tempoEstimadoTotal += produto.getTempoPreparoMinutos() * item.getQuantidade();
+            item.setQuantidade(itemDTO.getQuantidade());
+            return item;
+        }).collect(Collectors.toList());
+
+        for (ItemPedido item : itens) {
+            valorTotal += item.getProduto().getPreco() * item.getQuantidade();
+            tempoEstimadoTotal += item.getProduto().getTempoPreparoMinutos() * item.getQuantidade();
         }
 
+        pedido.setItens(itens);
         pedido.setValorTotal(valorTotal);
         pedido.setPrevisaoEntrega(LocalDateTime.now().plusMinutes(tempoEstimadoTotal));
 
@@ -66,6 +80,7 @@ public class PedidoService {
         return pedidoMapper.toDTO(salvo);
     }
 
+    @Transactional(rollbackFor = Throwable.class)
     public PedidoDTO atualizarStatus(Long id, PedidoDTO pedidoDTO) {
         Optional<Pedido> optional = pedidoRepository.findById(id);
         if (optional.isPresent()) {
@@ -77,6 +92,25 @@ public class PedidoService {
         return null;
     }
 
+    @Transactional(readOnly = true)
+    public List<PedidoDTO> listarPorStatus(StatusPedido status) {
+        List<Pedido> pedidos = pedidoRepository.findByStatus(status);
+        return pedidos.stream()
+                .map(pedidoMapper::toDTO)
+                .toList();
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
+    public PedidoDTO atualizarStatus(Long pedidoId, StatusPedido novoStatus) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+
+        pedido.setStatus(novoStatus);
+        Pedido atualizado = pedidoRepository.save(pedido);
+        return pedidoMapper.toDTO(atualizado);
+    }
+
+    @Transactional(rollbackFor = Throwable.class)
     public void deletar(Long id) {
         pedidoRepository.deleteById(id);
     }

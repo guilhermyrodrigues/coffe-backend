@@ -1,106 +1,43 @@
 package com.coffeworld.backend.dto;
 
 import com.coffeworld.backend.enums.StatusPedido;
-import lombok.Data;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Schema(description = "DTO que representa um pedido")
 @Data
 public class PedidoDTO {
+    @Schema(description = "ID do pedido", example = "1")
     private Long id;
 
+    @Schema(description = "CPF do cliente", example = "12345678901")
     private String cpfCliente;
+
+    @Schema(description = "Valor total do pedido", example = "24.90")
     private Double valorTotal;
+
+    @Schema(description = "Forma de pagamento (ex: PIX, CARTAO)", example = "PIX")
     private String formaPagamento;
 
+    @Schema(description = "Data e hora em que o pedido foi feito")
     private LocalDateTime dataHoraPedido;
+
+    @Schema(description = "Previsão de entrega do pedido")
     private LocalDateTime previsaoEntrega;
 
-    private StatusPedido status; // PENDENTE, EM_PREPARO, FINALIZADO, CANCELADO
+    @Schema(description = "Status do pedido", example = "PENDENTE")
+    private StatusPedido status;
 
+    @Schema(description = "Lista de itens do pedido")
     private List<ItemPedidoDTO> itens;
+
+    @Schema(description = "Avaliação feita para o pedido")
     private AvaliacaoDTO avaliacao;
 
+    @Schema(description = "Motivo do cancelamento, se houver")
     private String motivoCancelamento;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCpfCliente() {
-        return cpfCliente;
-    }
-
-    public void setCpfCliente(String cpfCliente) {
-        this.cpfCliente = cpfCliente;
-    }
-
-    public Double getValorTotal() {
-        return valorTotal;
-    }
-
-    public void setValorTotal(Double valorTotal) {
-        this.valorTotal = valorTotal;
-    }
-
-    public String getFormaPagamento() {
-        return formaPagamento;
-    }
-
-    public void setFormaPagamento(String formaPagamento) {
-        this.formaPagamento = formaPagamento;
-    }
-
-    public LocalDateTime getDataHoraPedido() {
-        return dataHoraPedido;
-    }
-
-    public void setDataHoraPedido(LocalDateTime dataHoraPedido) {
-        this.dataHoraPedido = dataHoraPedido;
-    }
-
-    public LocalDateTime getPrevisaoEntrega() {
-        return previsaoEntrega;
-    }
-
-    public void setPrevisaoEntrega(LocalDateTime previsaoEntrega) {
-        this.previsaoEntrega = previsaoEntrega;
-    }
-
-    public StatusPedido getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusPedido status) {
-        this.status = status;
-    }
-
-    public List<ItemPedidoDTO> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<ItemPedidoDTO> itens) {
-        this.itens = itens;
-    }
-
-    public AvaliacaoDTO getAvaliacao() {
-        return avaliacao;
-    }
-
-    public void setAvaliacao(AvaliacaoDTO avaliacao) {
-        this.avaliacao = avaliacao;
-    }
-
-    public String getMotivoCancelamento() {
-        return motivoCancelamento;
-    }
-
-    public void setMotivoCancelamento(String motivoCancelamento) {
-        this.motivoCancelamento = motivoCancelamento;
-    }
 }
