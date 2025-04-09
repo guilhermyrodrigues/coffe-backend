@@ -30,20 +30,20 @@ public class PedidoResource {
 
     @Operation(summary = "Buscar pedido por ID")
     @GetMapping("/{id}")
-    public ResponseEntity<PedidoDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<PedidoDTO> buscarPorId(@PathVariable(name = "id") Long id) {
         PedidoDTO pedido = pedidoService.buscarPorId(id);
         return pedido != null ? ResponseEntity.ok(pedido) : ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Filtrar pedidos por status")
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<PedidoDTO>> listarPorStatus(@Parameter(description = "Status do pedido (PENDENTE, EM_PREPARO, FINALIZADO, CANCELADO)") @PathVariable StatusPedido status) {
+    public ResponseEntity<List<PedidoDTO>> listarPorStatus(@Parameter(description = "Status do pedido (PENDENTE, EM_PREPARO, FINALIZADO, CANCELADO)") @PathVariable(name = "status") StatusPedido status) {
         return ResponseEntity.ok(pedidoService.listarPorStatus(status));
     }
 
     @Operation(summary = "Atualizar status do pedido")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<PedidoDTO> atualizarStatus(@PathVariable Long id, @RequestParam StatusPedido status) {
+    public ResponseEntity<PedidoDTO> atualizarStatus(@PathVariable(name = "id") Long id, @RequestParam StatusPedido status) {
         return ResponseEntity.ok(pedidoService.atualizarStatus(id, status));
     }
 
@@ -55,7 +55,7 @@ public class PedidoResource {
 
     @Operation(summary = "Deletar pedido pelo ID")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable(name = "id") Long id) {
         pedidoService.deletar(id);
         return ResponseEntity.noContent().build();
     }

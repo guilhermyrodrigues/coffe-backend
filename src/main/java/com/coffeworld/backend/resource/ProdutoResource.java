@@ -28,7 +28,7 @@ public class ProdutoResource {
 
     @Operation(summary = "Buscar produto por ID")
     @GetMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> buscarPorId( @Parameter(description = "ID do produto") @PathVariable Long id) {
+    public ResponseEntity<ProdutoDTO> buscarPorId( @Parameter(description = "ID do produto") @PathVariable(name = "id") Long id) {
         ProdutoDTO produto = produtoService.buscarPorId(id);
         return produto != null ? ResponseEntity.ok(produto) : ResponseEntity.notFound().build();
     }
@@ -41,14 +41,14 @@ public class ProdutoResource {
 
     @Operation(summary = "Atualizar produto existente")
     @PutMapping("/{id}")
-    public ResponseEntity<ProdutoDTO> atualizar(@PathVariable Long id, @RequestBody ProdutoDTO produtoDTO) {
+    public ResponseEntity<ProdutoDTO> atualizar(@PathVariable(name = "id") Long id, @RequestBody ProdutoDTO produtoDTO) {
         ProdutoDTO atualizado = produtoService.atualizar(id, produtoDTO);
         return atualizado != null ? ResponseEntity.ok(atualizado) : ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Deletar produto")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
+    public ResponseEntity<Void> deletar(@PathVariable(name = "id") Long id) {
         produtoService.deletar(id);
         return ResponseEntity.noContent().build();
     }

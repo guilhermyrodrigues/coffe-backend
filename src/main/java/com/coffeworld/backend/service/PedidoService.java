@@ -76,6 +76,10 @@ public class PedidoService {
         pedido.setValorTotal(valorTotal);
         pedido.setPrevisaoEntrega(LocalDateTime.now().plusMinutes(tempoEstimadoTotal));
 
+        if (pedido.getStatus() == null) {
+            pedido.setStatus(StatusPedido.PENDENTE);
+        }
+
         Pedido salvo = pedidoRepository.save(pedido);
         return pedidoMapper.toDTO(salvo);
     }
