@@ -33,5 +33,7 @@ public class Pedido {
 
     private String motivoCancelamento;
 
+    public String observacao;
+    
 }
 

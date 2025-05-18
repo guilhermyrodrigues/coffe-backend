@@ -14,4 +14,8 @@ public class ItemPedidoDTO {
 
     @Schema(description = "Quantidade escolhida", example = "2")
     private Integer quantidade;
+
+    @Schema(description = "Detalhes do produto")
+    private ProdutoDTO produto;  // **Adicionado este campo**
+    
 }

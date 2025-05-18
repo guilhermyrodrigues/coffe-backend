@@ -23,4 +23,8 @@ public class ProdutoDTO {
 
     @Schema(description = "Tempo Preparo em minutos", example = "5")
     private Integer tempoPreparoMinutos;
+
+    @Schema(description = "Categoria do produto", example = "Lanche")
+    private String categoria;
+
 }

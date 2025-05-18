@@ -1,9 +1,7 @@
 package com.coffeworld.backend.service;
 
-import com.coffeworld.backend.dto.ItemPedidoDTO;
 import com.coffeworld.backend.dto.PedidoDTO;
 import com.coffeworld.backend.enums.StatusPedido;
-import com.coffeworld.backend.mapper.ItemPedidoMapper;
 import com.coffeworld.backend.mapper.PedidoMapper;
 import com.coffeworld.backend.model.ItemPedido;
 import com.coffeworld.backend.model.Pedido;
@@ -30,9 +28,6 @@ public class PedidoService {
 
     @Autowired
     private PedidoMapper pedidoMapper;
-
-    @Autowired
-    private ItemPedidoMapper itemPedidoMapper;
 
     @Transactional(readOnly = true)
     public List<PedidoDTO> listarTodos() {
@@ -76,8 +71,14 @@ public class PedidoService {
         pedido.setValorTotal(valorTotal);
         pedido.setPrevisaoEntrega(LocalDateTime.now().plusMinutes(tempoEstimadoTotal));
 
+        // Se não houver status, definir como PENDENTE
         if (pedido.getStatus() == null) {
             pedido.setStatus(StatusPedido.PENDENTE);
+        }
+
+        // Adicionar observação, se presente
+        if (pedidoDTO.getObservacao() != null && !pedidoDTO.getObservacao().isEmpty()) {
+            pedido.setObservacao(pedidoDTO.getObservacao());
         }
 
         Pedido salvo = pedidoRepository.save(pedido);
@@ -91,6 +92,12 @@ public class PedidoService {
             Pedido pedido = optional.get();
             pedido.setStatus(pedidoDTO.getStatus());
             pedido.setMotivoCancelamento(pedidoDTO.getMotivoCancelamento());
+
+            // Atualizar observação se presente no DTO
+            if (pedidoDTO.getObservacao() != null && !pedidoDTO.getObservacao().isEmpty()) {
+                pedido.setObservacao(pedidoDTO.getObservacao());
+            }
+
             return pedidoMapper.toDTO(pedidoRepository.save(pedido));
         }
         return null;

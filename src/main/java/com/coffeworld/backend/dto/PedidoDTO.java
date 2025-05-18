@@ -39,5 +39,8 @@ public class PedidoDTO {
 
     @Schema(description = "Motivo do cancelamento, se houver")
     private String motivoCancelamento;
+    
+    @Schema(description = "Observação do pedido do produto",  example = "Preciso de uma colher")
+    private String observacao; 
 
 }
